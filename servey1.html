@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Startup Survey & Feedback</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+        body { background-color: #f4f7f6; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+        .survey-container { background: #ffffff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 100%; max-width: 500px; }
+        .header { text-align: center; margin-bottom: 25px; }
+        .header h2 { color: #333; margin-bottom: 8px; }
+        .header p { color: #666; font-size: 14px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #444; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 16px; outline: none; }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: #007bff; }
+        .submit-btn { width: 100%; padding: 14px; background-color: #007bff; color: white; border: none; border-radius: 6px; font-size: 18px; font-weight: bold; cursor: pointer; }
+        .submit-btn:hover { background-color: #0056b3; }
+        .loading-msg { display: none; text-align: center; color: #007bff; font-weight: bold; margin-top: 15px; }
+        .success-msg { display: none; text-align: center; color: #28a745; font-size: 18px; font-weight: bold; margin-top: 20px; }
+    </style>
+</head>
+<body>
+
+<div class="survey-container">
+    <div class="header">
+        <h2>Startup Survey Form</h2>
+        <p>Please share your valuable feedback with us!</p>
+    </div>
+
+    <!-- फॉर्म का नाम 'submit-to-google' रखा है ताकि शीट से कनेक्ट हो सके -->
+    <form name="submit-to-google">
+        <div class="form-group">
+            <label>Full Name *</label>
+            <input type="text" name="Name" placeholder="Enter your name" required>
+        </div>
+
+        <div class="form-group">
+            <label>Email Address *</label>
+            <input type="email" name="Email" placeholder="Enter your email" required>
+        </div>
+
+        <div class="form-group">
+            <label>You are a *</label>
+            <select name="Category" required>
+                <option value="">Select Option</option>
+                <option value="Student">Student (School/College)</option>
+                <option value="Working Professional">Working Professional (Office)</option>
+                <option value="Other">Other</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Your Feedback / Suggestions *</label>
+            <textarea name="Feedback" rows="4" placeholder="Type your feedback here..." required></textarea>
+        </div>
+
+        <button type="submit" class="submit-btn" id="submitBtn">Submit Survey</button>
+    </form>
+
+    <div class="loading-msg" id="loadingMessage">Submitting your response... Please wait.</div>
+    <div class="success-msg" id="successMessage">🎉 Thank you! Your response has been recorded.</div>
+</div>
+
+<script>
+    // ⚠️ STEP 3 वाली URL को यहाँ पेस्ट करना होगा
+    const scriptURL = 'https://script.google.com/macros/s/AKfycby_wmv8OMPlW1dgaHmyoiOeLU8971aFMaPb-zhvfd1aoBP7VIHsrMZk0MIAJ47bGistMQ/exec';
+    const form = document.forms['submit-to-google'];
+    const submitBtn = document.getElementById('submitBtn');
+    const loadingMessage = document.getElementById('loadingMessage');
+    const successMessage = document.getElementById('successMessage');
+
+    form.addEventListener('submit', e => {
+        e.preventDefault();
+        
+        // बटन छुपाओ और लोडिंग दिखाओ
+        form.style.display = 'none';
+        loadingMessage.style.display = 'block';
+
+        fetch(scriptURL, { method: 'POST', body: new FormData(form)})
+            .then(response => {
+                loadingMessage.style.display = 'none';
+                successMessage.style.display = 'block';
+            })
+            .catch(error => {
+                loadingMessage.style.display = 'none';
+                form.style.display = 'block';
+                alert('Error! Please try again.', error.message);
+            });
+    });
+</script>
+
+</body>
+</html>
