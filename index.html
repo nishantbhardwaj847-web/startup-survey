@@ -19,6 +19,7 @@
         .submit-btn:hover { background-color: #0056b3; }
         .loading-msg { display: none; text-align: center; color: #007bff; font-weight: bold; margin-top: 15px; }
         .success-msg { display: none; text-align: center; color: #28a745; font-size: 18px; font-weight: bold; margin-top: 20px; }
+        .error-msg { display: none; text-align: center; color: #dc3545; font-size: 16px; font-weight: bold; margin-top: 20px; }
     </style>
 </head>
 <body>
@@ -29,7 +30,6 @@
         <p>Please share your valuable feedback with us!</p>
     </div>
 
-    <!-- फॉर्म का नाम 'submit-to-google' रखा है ताकि शीट से कनेक्ट हो सके -->
     <form name="submit-to-google">
         <div class="form-group">
             <label>Full Name *</label>
@@ -51,6 +51,12 @@
             </select>
         </div>
 
+        <!-- 📱 मोबाइल नंबर का कॉलम -->
+        <div class="form-group">
+            <label>Mobile Number *</label>
+            <input type="tel" name="Mobile" pattern="[0-9]{10}" title="Please enter a valid 10-digit mobile number" placeholder="Enter 10-digit mobile number" required>
+        </div>
+
         <div class="form-group">
             <label>Your Feedback / Suggestions *</label>
             <textarea name="Feedback" rows="4" placeholder="Type your feedback here..." required></textarea>
@@ -61,32 +67,40 @@
 
     <div class="loading-msg" id="loadingMessage">Submitting your response... Please wait.</div>
     <div class="success-msg" id="successMessage">🎉 Thank you! Your response has been recorded.</div>
+    <div class="error-msg" id="errorMessage">⚠️ This email has already submitted the survey!</div>
 </div>
 
 <script>
-    // ⚠️ STEP 3 वाली URL को यहाँ पेस्ट करना होगा
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbx06aBSSZHb0wC7lzdv7eYTNrbdBk-mxxtVaV_I5Oi7eRSc-2IjiW3Iu24jqYSp7eBo/exec';
+    // ⚠️ अपनी नई Google Web App URL यहाँ नीचे डालें
+    const scriptURL = 'YOUR_GOOGLE_SCRIPT_URL_HERE';
     const form = document.forms['submit-to-google'];
-    const submitBtn = document.getElementById('submitBtn');
     const loadingMessage = document.getElementById('loadingMessage');
     const successMessage = document.getElementById('successMessage');
+    const errorMessage = document.getElementById('errorMessage');
 
     form.addEventListener('submit', e => {
         e.preventDefault();
         
-        // बटन छुपाओ और लोडिंग दिखाओ
         form.style.display = 'none';
         loadingMessage.style.display = 'block';
+        errorMessage.style.display = 'none';
 
         fetch(scriptURL, { method: 'POST', body: new FormData(form)})
-            .then(response => {
+            .then(response => response.json())
+            .then(data => {
                 loadingMessage.style.display = 'none';
-                successMessage.style.display = 'block';
+                
+                if(data.result === 'already_exists') {
+                    errorMessage.style.display = 'block';
+                    form.style.display = 'block'; 
+                } else {
+                    successMessage.style.display = 'block';
+                }
             })
             .catch(error => {
                 loadingMessage.style.display = 'none';
                 form.style.display = 'block';
-                alert('Error! Please try again.', error.message);
+                alert('Error! Please try again.');
             });
     });
 </script>
